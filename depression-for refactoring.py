@@ -198,8 +198,8 @@ y_test.value_counts()
 #DECISION TREE Hyperparameter Tuning
 model = DecisionTreeClassifier()
 parameters = {'splitter' : ['best', 'random'],
-              'criterion' : ['gini', 'entropy'], #removed 'auto': causes warning
-              'max_features': ['log2', 'sqrt'],
+              'criterion' : ['gini', 'entropy'], 
+              'max_features': ['log2', 'sqrt'], #removed 'auto': causes warning deprecated
               'max_depth': [2, 3, 5, 10, 17],
               'min_samples_split': [2, 3, 5, 7, 9],
               'min_samples_leaf': [1,5,8,11], 
