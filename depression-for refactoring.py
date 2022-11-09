@@ -51,8 +51,29 @@ from sklearn.ensemble import GradientBoostingClassifier
 import EDA_Tools
 
 
+def main():
+       pass
+
+
+def perform_EDA():
+       pass
+
+
+
+def data_preprocessing():
+       pass
+
+
+def feature_selection():
+       pass
+
+
+def performance_evaluation():
+       pass
+
+
 df = pd.read_csv("Depression.csv")
- 
+
 EDA_Tools.describe_df(df, head=True, info=True, describe=True)
 
 EDA_Tools.count_col_value(df, 'DEPRESSED', withPercentage=True)
@@ -102,7 +123,7 @@ df_nodupLE = df_nodup.copy(deep=True)
 
 number = LabelEncoder()
 for i in categorical_cols:
-    df_nodupLE[i] = number.fit_transform(df_nodupLE[i].astype(str))
+df_nodupLE[i] = number.fit_transform(df_nodupLE[i].astype(str))
 
 ##################
 orig_cols = list(df_nodupLE.columns)
@@ -119,7 +140,6 @@ df_nodupLE.columns = orig_cols
 
 df_nodupLE["DEPRESSED"] = df_nodup["DEPRESSED"]
 df_nodupLE_bak = df_nodupLE.copy(deep=True)
-
 
 ##################
 #create whitish correlation matrix
@@ -160,6 +180,10 @@ corr_columns = ['ENVSAT', 'POSSAT', 'FINSTR', 'INSOM', 'ANXI', 'DEPRI', 'ABUSED'
 # We create a new dataframe with the selected fields as columns
 df_corr = df_nodupLE[['ENVSAT', 'POSSAT', 'FINSTR', 'INSOM', 'ANXI', 'DEPRI', 'ABUSED',
        'CHEAT', 'THREAT', 'SUICIDE', 'INFER', 'CONFLICT', 'LOST']].copy()
+
+
+
+
 
 ###################################################################
 # Performance Evaluation of 8 ML algorithms
