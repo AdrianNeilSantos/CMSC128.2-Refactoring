@@ -48,7 +48,31 @@ from sklearn.feature_selection import RFE
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import GradientBoostingClassifier
 
-import EDA_Tools
+import EDA_Tools, Preprocessing_Tools
+
+
+#create whitish correlation matrix
+def correlation_matrix(df: pd.DataFrame):
+    """
+    A function to calculate and plot
+    correlation matrix of a DataFrame.
+    """
+    # Create the matrix
+    matrix = df.corr()
+    
+    # Create cmap
+    cmap = sns.diverging_palette(250, 15, s=75, l=40,
+                             n=9, center="light", as_cmap=True)
+    # Create a mask
+    mask = np.triu(np.ones_like(matrix, dtype=bool))
+    
+    # Make figsize bigger
+    fig, ax = plt.subplots(figsize=(25,10))
+    
+    # Plot the matrix
+    _ = sns.heatmap(matrix, mask=mask, center=0, annot=True,
+             fmt='.2f', cmap=cmap, ax=ax)
+    
 
 
 def main():
@@ -56,7 +80,20 @@ def main():
 
 
 def data_preprocessing():
-       pass
+       orig_cols = list(df_nodupLE.columns)
+
+       # Let's apply StandardScaler() to the dataset with no outliers
+       trans = StandardScaler()
+       df_nodupLE = trans.fit_transform(df_nodupLE)
+
+       # convert the array back to a dataframe
+       df_nodupLE = DataFrame(df_nodupLE)
+
+       # reassign the column names
+       df_nodupLE.columns = orig_cols
+
+       df_nodupLE["DEPRESSED"] = df_nodup["DEPRESSED"]
+       df_nodupLE_bak = df_nodupLE.copy(deep=True)
 
 
 def perform_EDA():
@@ -142,29 +179,6 @@ df_nodupLE["DEPRESSED"] = df_nodup["DEPRESSED"]
 df_nodupLE_bak = df_nodupLE.copy(deep=True)
 
 ##################
-#create whitish correlation matrix
-def correlation_matrix(df: pd.DataFrame):
-    """
-    A function to calculate and plot
-    correlation matrix of a DataFrame.
-    """
-    # Create the matrix
-    matrix = df.corr()
-    
-    # Create cmap
-    cmap = sns.diverging_palette(250, 15, s=75, l=40,
-                             n=9, center="light", as_cmap=True)
-    # Create a mask
-    mask = np.triu(np.ones_like(matrix, dtype=bool))
-    
-    # Make figsize bigger
-    fig, ax = plt.subplots(figsize=(25,10))
-    
-    # Plot the matrix
-    _ = sns.heatmap(matrix, mask=mask, center=0, annot=True,
-             fmt='.2f', cmap=cmap, ax=ax)
-    
-
 my_corr = correlation_matrix(df_nodupLE)
 
 # Select features whose correlation with target is > 0.2
