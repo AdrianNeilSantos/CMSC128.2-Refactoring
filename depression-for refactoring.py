@@ -55,11 +55,7 @@ df = pd.read_csv("Depression.csv")
  
 EDA_Tools.describe_df(df, head=True, info=True, describe=True)
 
-#to count how many have and do not have heart disease 
-df['DEPRESSED'].value_counts()
-
-#To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
-df['DEPRESSED'].value_counts(normalize=True)*100
+EDA_Tools.count_col_value(df, 'DEPRESSED', withPercentage=True)
 
 df.isnull().any()
 
@@ -95,8 +91,8 @@ categorical_cols = df_nodup.columns
 categorical_cols = categorical_cols.drop("DEPRESSED")
 
 df_nodup.isnull().any()
-df_nodup.describe()
-df_nodup.info()
+EDA_Tools.describe_df(df_nodup, info=True, describe=True)
+
 print(df_nodup.groupby('DEPRESSED').size())
 
 df_nodup = df_nodup.reset_index(drop=True)
