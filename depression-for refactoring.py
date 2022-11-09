@@ -368,6 +368,3 @@ y_pred = rf.predict(x_test)
 print("Random Forest Accuracy", accuracy_score(y_test, y_pred))
 print("Confusion Matrix: \n", confusion_matrix(y_test, y_pred)) 
 print("Classification Report Random Forest\n", classification_report(y_test, y_pred))
-
-
-
