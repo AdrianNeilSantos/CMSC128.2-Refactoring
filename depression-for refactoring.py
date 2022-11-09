@@ -53,7 +53,7 @@ import AuxillaryFunctions
 
 df = pd.read_csv("Depression.csv")
  
-AuxillaryFunctions.perform_eda(df)
+AuxillaryFunctions.perform_eda(df, head=True, info=True, describe=True)
 
 #to count how many have and do not have heart disease 
 df['DEPRESSED'].value_counts()
