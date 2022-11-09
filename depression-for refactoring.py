@@ -48,13 +48,13 @@ from sklearn.feature_selection import RFE
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import GradientBoostingClassifier
 
+import AuxillaryFunctions
 
 
 df = pd.read_csv("Depression.csv")
-df.head()
-df.info()
-df.describe()
  
+AuxillaryFunctions.perform_eda(df)
+
 #to count how many have and do not have heart disease 
 df['DEPRESSED'].value_counts()
 
@@ -368,6 +368,8 @@ y_pred = rf.predict(x_test)
 print("Random Forest Accuracy", accuracy_score(y_test, y_pred))
 print("Confusion Matrix: \n", confusion_matrix(y_test, y_pred)) 
 print("Classification Report Random Forest\n", classification_report(y_test, y_pred))
+
+
 
 
 
