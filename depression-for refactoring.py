@@ -48,12 +48,12 @@ from sklearn.feature_selection import RFE
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import GradientBoostingClassifier
 
-import AuxillaryFunctions
+import EDA_Tools
 
 
 df = pd.read_csv("Depression.csv")
  
-AuxillaryFunctions.describe_df(df, head=True, info=True, describe=True)
+EDA_Tools.describe_df(df, head=True, info=True, describe=True)
 
 #to count how many have and do not have heart disease 
 df['DEPRESSED'].value_counts()
@@ -85,11 +85,11 @@ print('Shape of dataframe with no more duplicates: ', df_nodup.shape)
 
 
 #############################
-AuxillaryFunctions.describe_df(df_nodup, head=True, info=True, describe=True)
+EDA_Tools.describe_df(df_nodup, head=True, info=True, describe=True)
 
 #to count how many have and do not have DEPRESSION
 #to count percentage distribution
-AuxillaryFunctions.count_col_value(df_nodup, 'DEPRESSED', withPercentage=True)
+EDA_Tools.count_col_value(df_nodup, 'DEPRESSED', withPercentage=True)
 
 categorical_cols = df_nodup.columns
 categorical_cols = categorical_cols.drop("DEPRESSED")
