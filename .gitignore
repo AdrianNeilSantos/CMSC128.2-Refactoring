@@ -1,1 +1,3 @@
-environemnt/
+environment/
+venv/
+__pycache__
