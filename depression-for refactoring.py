@@ -65,6 +65,8 @@ def perform_EDA():
 def feature_selection():
        pass
 
+def model_training():
+       pass
 
 def performance_evaluation():
        pass
