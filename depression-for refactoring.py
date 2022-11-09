@@ -53,7 +53,7 @@ import AuxillaryFunctions
 
 df = pd.read_csv("Depression.csv")
  
-AuxillaryFunctions.perform_eda(df, head=True, info=True, describe=True)
+AuxillaryFunctions.describe_df(df, head=True, info=True, describe=True)
 
 #to count how many have and do not have heart disease 
 df['DEPRESSED'].value_counts()
@@ -85,16 +85,11 @@ print('Shape of dataframe with no more duplicates: ', df_nodup.shape)
 
 
 #############################
-
-df_nodup.head()
-df_nodup.info()
-df_nodup.describe()
+AuxillaryFunctions.describe_df(df_nodup, head=True, info=True, describe=True)
 
 #to count how many have and do not have DEPRESSION
-df_nodup['DEPRESSED'].value_counts()
-
-#To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
-df_nodup['DEPRESSED'].value_counts(normalize=True)*100
+#to count percentage distribution
+AuxillaryFunctions.count_col_value(df_nodup, 'DEPRESSED', withPercentage=True)
 
 categorical_cols = df_nodup.columns
 categorical_cols = categorical_cols.drop("DEPRESSED")
