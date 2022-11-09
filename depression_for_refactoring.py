@@ -25,6 +25,8 @@ from sklearn.metrics import (
     classification_report,
 )
 
+import EDA_Tools, Preprocessing_Tools, Feature_Selection_Tools, Evaluate_Performance_Tools
+
 # -*- coding: utf-8 -*-
 """
 Created on Sun May  1 19:07:32 2022
@@ -39,19 +41,80 @@ Created on Sat Apr 30 23:54:42 2022
 @author: Sheila
 """
 
+def main():
+    df = pd.read_csv("Depression.csv")
+    data_preprocessing(df)
+    pass
+
+def data_preprocessing(df):
+    ## REMOVE DUPLICATES ##
+    EDA_Tools.describe_df(df, head=True, info=True, describe=True)
+    EDA_Tools.count_col_value(df, 'DEPRESSED', withPercentage=True)
+
+    df.isnull().any()
+    # Selecting duplicate rows except first
+    # occurrence based on all columns
+    # saves the duplicates in the dataframe called dup
+    dup = df[df.duplicated()]
+    print("These are the duplicate rows (there are 10 duplicates):")
+    dup
+    dup.shape
+
+    # save a copy of the records with no duplicates in a new dataframe named df_nodup
+    df_nodup = df.drop_duplicates()
+    df_nodup.to_csv("Depression_nodup.csv")
+    df_nodup.shape
+
+    df.duplicated()
+    print("Shape of original dataframe from csv: ", df.shape)
+    print("Shape of dataframe containing the duplicates: ", dup.shape)
+    print("Shape of dataframe with no more duplicates: ", df_nodup.shape)
+
+    #############################
+
+    EDA_Tools.describe_df(df, head=True, info=True, describe=True)
+
+    # to count how many have and do not have DEPRESSION
+    df_nodup["DEPRESSED"].value_counts()
+
+    # To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
+    df_nodup["DEPRESSED"].value_counts(normalize=True) * 100
+
+    categorical_cols = df_nodup.columns
+    categorical_cols = categorical_cols.drop("DEPRESSED")
+
+    df_nodup.isnull().any()
+    EDA_Tools.describe_df(df, info=True, describe=True)
+
+    depressed_group = df_nodup.groupby("DEPRESSED")
+    depressed_group_size = depressed_group.size()
+    print(depressed_group_size)
+
+    df_nodup = df_nodup.reset_index(drop=True)
+
+    return df_nodup
+
+
+def perform_EDA():
+       pass
+
+def feature_selection():
+       pass
+
+def model_training():
+       pass
+
+def evaluate_performance():
+       pass
+
+
+
 df = pd.read_csv("Depression.csv")
-df.head()
-df.info()
-df.describe()
 
-# to count how many have and do not have heart disease
-df["DEPRESSED"].value_counts()
-
-# To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
-df["DEPRESSED"].value_counts(normalize=True) * 100
+EDA_Tools.describe_df(df, head=True, info=True, describe=True)
+EDA_Tools.count_col_value(df, 'DEPRESSED', withPercentage=True)
 
 df.isnull().any()
-
 # Selecting duplicate rows except first
 # occurrence based on all columns
 # saves the duplicates in the dataframe called dup
@@ -75,9 +138,7 @@ print("Shape of dataframe with no more duplicates: ", df_nodup.shape)
 
 #############################
 
-df_nodup.head()
-df_nodup.info()
-df_nodup.describe()
+EDA_Tools.describe_df(df, head=True, info=True, describe=True)
 
 # to count how many have and do not have DEPRESSION
 df_nodup["DEPRESSED"].value_counts()
@@ -89,103 +150,37 @@ categorical_cols = df_nodup.columns
 categorical_cols = categorical_cols.drop("DEPRESSED")
 
 df_nodup.isnull().any()
-df_nodup.describe()
-df_nodup.info()
-print(df_nodup.groupby("DEPRESSED").size())
+EDA_Tools.describe_df(df, info=True, describe=True)
+
+depressed_group = df_nodup.groupby("DEPRESSED")
+depressed_group_size = depressed_group.size()
+print(depressed_group_size)
 
 df_nodup = df_nodup.reset_index(drop=True)
 
+
+
 # Use LabelEncoder to recode the categorical values
 df_nodupLE = df_nodup.copy(deep=True)
-
-number = LabelEncoder()
-for i in categorical_cols:
-    df_nodupLE[i] = number.fit_transform(df_nodupLE[i].astype(str))
-
-##################
-orig_cols = list(df_nodupLE.columns)
-
-# Let's apply StandardScaler() to the dataset with no outliers
-trans = StandardScaler()
-df_nodupLE = trans.fit_transform(df_nodupLE)
-
-# convert the array back to a dataframe
-df_nodupLE = DataFrame(df_nodupLE)
-
-# reassign the column names
-df_nodupLE.columns = orig_cols
-
-df_nodupLE["DEPRESSED"] = df_nodup["DEPRESSED"]
-df_nodupLE_bak = df_nodupLE.copy(deep=True)
+df_nodupLE = Preprocessing_Tools.recode_categorical(df_nodupLE, categorical_cols)
 
 
 ##################
+df_nodupLE = Preprocessing_Tools.standard_scale(df_nodupLE, df_nodup, 'DEPRESSED')
+##################
+
+
 # create whitish correlation matrix
-def correlation_matrix(df: pd.DataFrame):
-    """
-    A function to calculate and plot
-    correlation matrix of a DataFrame.
-    """
-    # Create the matrix
-    matrix = df.corr()
+my_corr = EDA_Tools.correlation_matrix(df_nodupLE)
 
-    # Create cmap
-    cmap = sns.diverging_palette(250, 15, s=75, l=40, n=9, center="light", as_cmap=True)
-    # Create a mask
-    mask = np.triu(np.ones_like(matrix, dtype=bool))
-
-    # Make figsize bigger
-    fig, ax = plt.subplots(figsize=(25, 10))
-
-    # Plot the matrix
-    _ = sns.heatmap(
-        matrix, mask=mask, center=0, annot=True, fmt=".2f", cmap=cmap, ax=ax
-    )
-
-
-my_corr = correlation_matrix(df_nodupLE)
 
 # Select features whose correlation with target is > 0.2
-cor = df_nodupLE.corr()
-cor_target = abs(cor["DEPRESSED"])
-relevant_features = cor_target[cor_target >= 0.2]
-relevant_features.index
+corr_columns = Feature_Selection_Tools.get_features_by_corr(df_nodupLE, target='DEPRESSED', corr_threshold=0.2)
 
-# These are the selected columns whose abs(corr with target) is > 0.2
-corr_columns = [
-    "ENVSAT",
-    "POSSAT",
-    "FINSTR",
-    "INSOM",
-    "ANXI",
-    "DEPRI",
-    "ABUSED",
-    "CHEAT",
-    "THREAT",
-    "SUICIDE",
-    "INFER",
-    "CONFLICT",
-    "LOST",
-]
 
 # We create a new dataframe with the selected fields as columns
-df_corr = df_nodupLE[
-    [
-        "ENVSAT",
-        "POSSAT",
-        "FINSTR",
-        "INSOM",
-        "ANXI",
-        "DEPRI",
-        "ABUSED",
-        "CHEAT",
-        "THREAT",
-        "SUICIDE",
-        "INFER",
-        "CONFLICT",
-        "LOST",
-    ]
-].copy()
+df_corr = df_nodupLE[corr_columns].copy()
+
 
 ###################################################################
 # Performance Evaluation of 8 ML algorithms
@@ -216,7 +211,7 @@ model = DecisionTreeClassifier()
 parameters = {
     "splitter": ["best", "random"],
     "criterion": ["gini", "entropy"],
-    "max_features": ["log2", "sqrt", "auto"],
+    "max_features": ["log2", "sqrt"], #removed auto
     "max_depth": [2, 3, 5, 10, 17],
     "min_samples_split": [2, 3, 5, 7, 9],
     "min_samples_leaf": [1, 5, 8, 11],
@@ -245,14 +240,7 @@ dt = DecisionTreeClassifier(
     min_samples_split=9,
 )
 
-# dt = DecisionTreeClassifier(max_depth=17, max_features='log2', random_state=1,
-#                             criterion = 'entropy', min_samples_split=9)
-dt.fit(x_train, y_train)
-y_pred = dt.predict(x_test)
-print("Decision Tree Accuracy", accuracy_score(y_test, y_pred))
-print("Confusion Matrix: \n", confusion_matrix(y_test, y_pred))
-print("Classification Report Decision Tree\n", classification_report(y_test, y_pred))
-
+Evaluate_Performance_Tools.evaluate_model(dt,"Decision Tree", x_train, x_test, y_train, y_test)
 
 ##################################################
 # LOGISTIC REGRESSION HYPERPARAMETER TUNING
@@ -276,13 +264,10 @@ grid_result = grid_search.fit(x_train, y_train)
 print("Best score: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 # Best score: 0.843457 using {'C': 1.0, 'penalty': 'l2', 'solver': 'newton-cg'}
 lr = LogisticRegression(C=1.0, penalty="l2", solver="newton-cg", random_state=42)
-lr.fit(x_train, y_train)
-y_pred = lr.predict(x_test)
-print("Logistic Regression Accuracy", accuracy_score(y_test, y_pred))
-print("Confusion Matrix: \n", confusion_matrix(y_test, y_pred))
-print(
-    "Classification Report Logistic Regression\n", classification_report(y_test, y_pred)
-)
+
+Evaluate_Performance_Tools.evaluate_model(lr,"Logistic Regression", x_train, x_test, y_train, y_test)
+
+
 
 ##################################################
 
@@ -339,33 +324,34 @@ plt.barh(x_train.columns, lr.coef_[0])
 # plot feature name and feature importance unsorted
 data2.plot(kind="barh", y="feature_importance", x="features")
 
+sorted_values = data2.sort_values(by="feature_importance", ascending=True)
 # plot ALL feature name and feature importance sorted via feature importance largest to smallest; when displayed top is the feature with largest feature importance
-data2.sort_values(by="feature_importance", ascending=True).plot(
+sorted_values.plot(
     kind="barh", x="features"
 )
 
 # plot top 10 smallest features importance. when displayed, top is the last 10th smallest, followed by 9th smallest,... last entry is the smallest
-data2.sort_values(by="feature_importance", ascending=True).head(10).plot(
+sorted_values.head(10).plot(
     kind="barh", x="features"
 )
 
 # plot top 15 largest feature importance. when displayed, top is the largest feature importance, pababa
-data2.sort_values(by="feature_importance", ascending=True).tail(15).plot(
+sorted_values.tail(15).plot(
     kind="barh", x="features", title="LR Feature Importance"
 )
 
 # plot ALL feature name and feature importance sorted via feature importance smallest to largest; when displayed top is the feature with the smallest feature importance
-data2.sort_values(by="feature_importance", ascending=False).plot(
+sorted_values.plot(
     kind="barh", x="features"
 )
 
 # plot top 10 largest feature importance. when displayed top is the last 10th largeest, followed by 9th largest,... last entry is the largest
-data2.sort_values(by="feature_importance", ascending=False).head(10).plot(
+sorted_values.head(10).plot(
     kind="barh", x="features"
 )
 
 # plot top 10 smallest feature importance. when displayed top is the smallest, followed by 2nd to the smallest,... last entry is the 10th to the smallest
-data2.sort_values(by="feature_importance", ascending=False).tail(10).plot(
+sorted_values.tail(10).plot(
     kind="barh", x="features"
 )
 
@@ -413,8 +399,4 @@ print(cvres_df[["mean_test_score", "params"]])
 # Best estimator: RandomForestClassifier(max_depth=20, n_estimators=450, random_state=42)
 
 rf = RandomForestClassifier(max_depth=20, n_estimators=400, random_state=42)
-rf.fit(x_train, y_train)
-y_pred = rf.predict(x_test)
-print("Random Forest Accuracy", accuracy_score(y_test, y_pred))
-print("Confusion Matrix: \n", confusion_matrix(y_test, y_pred))
-print("Classification Report Random Forest\n", classification_report(y_test, y_pred))
+Evaluate_Performance_Tools.evaluate_model(rf,"Random Forest", x_train, x_test, y_train, y_test)
