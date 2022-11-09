@@ -48,18 +48,35 @@ from sklearn.feature_selection import RFE
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import GradientBoostingClassifier
 
+import EDA_Tools
+
+
+def main():
+       pass
+
+
+def data_preprocessing():
+       pass
+
+
+def perform_EDA():
+       pass
+
+def feature_selection():
+       pass
+
+def model_training():
+       pass
+
+def performance_evaluation():
+       pass
 
 
 df = pd.read_csv("Depression.csv")
-df.head()
-df.info()
-df.describe()
- 
-#to count how many have and do not have heart disease 
-df['DEPRESSED'].value_counts()
 
-#To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
-df['DEPRESSED'].value_counts(normalize=True)*100
+EDA_Tools.describe_df(df, head=True, info=True, describe=True)
+
+EDA_Tools.count_col_value(df, 'DEPRESSED', withPercentage=True)
 
 df.isnull().any()
 
