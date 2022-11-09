@@ -1,3 +1,30 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from pandas import DataFrame
+
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+from imblearn.over_sampling import SMOTE
+
+from sklearn.model_selection import (
+    train_test_split,
+    GridSearchCV,
+    RepeatedStratifiedKFold,
+)
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import (
+    confusion_matrix,
+    accuracy_score,
+    classification_report,
+)
+
 # -*- coding: utf-8 -*-
 """
 Created on Sun May  1 19:07:32 2022
@@ -12,86 +39,16 @@ Created on Sat Apr 30 23:54:42 2022
 @author: Sheila
 """
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import time
-
-from pandas import DataFrame
-from scipy import stats
-
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.preprocessing import PowerTransformer
-from sklearn import preprocessing
-
-from imblearn.over_sampling import SMOTE
-
-from sklearn.model_selection import (
-    train_test_split,
-    GridSearchCV,
-    RepeatedStratifiedKFold,
-    RandomizedSearchCV,
-    StratifiedKFold,
-)
-
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.ensemble import AdaBoostClassifier
-
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import (
-    accuracy_score,
-    classification_report,
-    precision_recall_curve,
-    f1_score,
-    auc,
-)
-from sklearn.metrics import roc_curve, roc_auc_score
-
-from sklearn.feature_selection import RFE
-from sklearn.feature_selection import RFECV
-from sklearn.ensemble import GradientBoostingClassifier
-
-import EDA_Tools
-
-
-def main():
-    pass
-
-
-def data_preprocessing():
-    pass
-
-
-def perform_EDA():
-    pass
-
-
-def feature_selection():
-    pass
-
-
-def model_training():
-    pass
-
-
-def performance_evaluation():
-    pass
-
-
 df = pd.read_csv("Depression.csv")
+df.head()
+df.info()
+df.describe()
 
-EDA_Tools.describe_df(df, head=True, info=True, describe=True)
+# to count how many have and do not have heart disease
+df["DEPRESSED"].value_counts()
 
-EDA_Tools.count_col_value(df, "DEPRESSED", withPercentage=True)
+# To get the percentage distribution of values of a column we use df['colname'].value_counts(normalize=True)*100
+df["DEPRESSED"].value_counts(normalize=True) * 100
 
 df.isnull().any()
 
@@ -242,10 +199,7 @@ xx_train, x_test, yy_train, y_test = train_test_split(
     x, y, test_size=0.30, random_state=14
 )
 
-from imblearn.over_sampling import SMOTE
-
 sampler = SMOTE(random_state=0)
-
 
 x_train, y_train = sampler.fit_resample(xx_train, yy_train)
 
@@ -262,7 +216,7 @@ model = DecisionTreeClassifier()
 parameters = {
     "splitter": ["best", "random"],
     "criterion": ["gini", "entropy"],
-    "max_features": ["log2", "sqrt"],  # removed 'auto': causes warning deprecated
+    "max_features": ["log2", "sqrt", "auto"],
     "max_depth": [2, 3, 5, 10, 17],
     "min_samples_split": [2, 3, 5, 7, 9],
     "min_samples_leaf": [1, 5, 8, 11],
