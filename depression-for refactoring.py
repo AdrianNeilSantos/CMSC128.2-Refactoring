@@ -55,14 +55,12 @@ def main():
        pass
 
 
-def perform_EDA():
-       pass
-
-
-
 def data_preprocessing():
        pass
 
+
+def perform_EDA():
+       pass
 
 def feature_selection():
        pass
@@ -123,7 +121,7 @@ df_nodupLE = df_nodup.copy(deep=True)
 
 number = LabelEncoder()
 for i in categorical_cols:
-df_nodupLE[i] = number.fit_transform(df_nodupLE[i].astype(str))
+       df_nodupLE[i] = number.fit_transform(df_nodupLE[i].astype(str))
 
 ##################
 orig_cols = list(df_nodupLE.columns)
